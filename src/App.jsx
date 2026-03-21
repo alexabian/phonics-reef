@@ -27,13 +27,29 @@ function saveProgress(progress) {
   } catch {}
 }
 
-function speak(text) {
-  if (!window.speechSynthesis) return;
-  window.speechSynthesis.cancel();
-  const utt = new SpeechSynthesisUtterance(text);
-  utt.lang = "en-GB";
-  utt.rate = 0.85;
-  window.speechSynthesis.speak(utt);
+// currentAudio is module-level so we can stop the previous clip before playing a new one
+let currentAudio = null;
+
+function speak(text, type = "word") {
+  const src = type === "gpc"
+    ? `/audio/gpcs/${text}.mp3`
+    : `/audio/words/${text}.mp3`;
+
+  if (currentAudio) {
+    currentAudio.pause();
+    currentAudio.currentTime = 0;
+  }
+  currentAudio = new Audio(src);
+  currentAudio.play().catch(() => {
+    // Fallback to browser TTS if the file is missing
+    if (window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+      const utt = new SpeechSynthesisUtterance(text);
+      utt.lang = "en-GB";
+      utt.rate = 0.85;
+      window.speechSynthesis.speak(utt);
+    }
+  });
 }
 
 // ─── Styles ──────────────────────────────────────────────────────────────────
@@ -445,7 +461,7 @@ function MissingGraphemeGame({ gpcId, audioEnabled, onComplete, onBack }) {
           <button
             className="btn-bounce"
             style={{ ...S.btn, ...S.btnSecondary, fontSize: 13, padding: "8px 16px", marginTop: 12 }}
-            onClick={() => speak(gpc.grapheme)}
+            onClick={() => speak(gpcId, "gpc")}
           >
             🔊 Hear it
           </button>
