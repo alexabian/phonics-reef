@@ -23,7 +23,15 @@ async function sleep(ms) {
   return new Promise(r => setTimeout(r, ms));
 }
 
+// Wrap text in SSML speak tags if it already contains XML tags
+function toSSML(text) {
+  if (text.startsWith("<")) return `<speak>${text}</speak>`;
+  return text;
+}
+
 async function tts(text) {
+  const ssml = toSSML(text);
+  const isSSML = ssml.startsWith("<speak>");
   const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}`, {
     method: "POST",
     headers: {
@@ -31,7 +39,7 @@ async function tts(text) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      text,
+      text: isSSML ? ssml : text,
       model_id: "eleven_multilingual_v2",
       voice_settings: {
         stability: 0.65,
@@ -69,7 +77,7 @@ async function generate(label, outPath, text) {
 
 const PHONEME_SPOKEN_AS = {
   // Level 1 — Short vowels
-  short_a:        "a",        // /æ/  — as in cat
+  short_a:        '<phoneme alphabet="ipa" ph="æ">a</phoneme>',  // /æ/ — as in cat
   short_e:        "e",        // /ɛ/  — as in bed
   short_i:        "i",        // /ɪ/  — as in big
   short_o:        "o",        // /ɒ/  — as in dog
