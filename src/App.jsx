@@ -231,7 +231,7 @@ function HomeScreen({ onStart, audioEnabled, onToggleAudio }) {
       </div>
       <div style={{ ...S.card, textAlign: "left", maxWidth: 480, margin: "0 auto" }}>
         <p style={{ ...S.p, margin: 0, fontSize: 14, color: "#e0f2fe" }}>
-          🪸 6 ocean zones to explore<br />
+          🪸 9 ocean zones to explore<br />
           🌟 Earn stars by spotting sounds<br />
           🔓 Unlock deeper waters as you improve<br />
           🎯 5 quick questions per session
