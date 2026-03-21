@@ -68,18 +68,62 @@ async function generate(label, outPath, text) {
 // Using real English words/syllables so TTS doesn't read letters individually.
 
 const PHONEME_SPOKEN_AS = {
+  // Level 1 — Short vowels
+  short_a:        "a",        // /æ/  — as in cat
+  short_e:        "e",        // /ɛ/  — as in bed
+  short_i:        "i",        // /ɪ/  — as in big
+  short_o:        "o",        // /ɒ/  — as in dog
+  short_u:        "u",        // /ʌ/  — as in bus
+  // Level 2 — Doubled consonants
   ff:             "f",        // /f/  — as in off
   ll:             "l",        // /l/  — as in bell
   ss:             "s",        // /s/  — as in miss
   zz:             "z",        // /z/  — as in buzz
   ck:             "k",        // /k/  — as in back
   nk:             "nk",       // /ŋk/ — as in bank
+  bb:             "b",        // /b/  — as in rabbit
+  dd:             "d",        // /d/  — as in odd
+  nn:             "n",        // /n/  — as in funny
+  pp:             "p",        // /p/  — as in happy
+  rr:             "r",        // /r/  — as in arrow
+  tt:             "t",        // /t/  — as in attic
+  // Level 3 — Consonant digraphs
+  sh:             "sh",       // /ʃ/  — as in ship
+  ch:             "ch",       // /tʃ/ — as in chip
+  th:             "th",       // /θ/  — as in this
+  ng:             "ng",       // /ŋ/  — as in ring
+  // Level 4 — Consonant blends
+  bl:             "bl",       // /bl/ — as in black
+  br:             "br",       // /br/ — as in bread
+  cl:             "cl",       // /kl/ — as in clap
+  cr:             "cr",       // /kr/ — as in crab
+  dr:             "dr",       // /dr/ — as in drum
+  fl:             "fl",       // /fl/ — as in flag
+  fr:             "fr",       // /fr/ — as in frog
+  gl:             "gl",       // /gl/ — as in glad
+  gr:             "gr",       // /gr/ — as in grab
+  pl:             "pl",       // /pl/ — as in plan
+  pr:             "pr",       // /pr/ — as in print
+  sk:             "sk",       // /sk/ — as in skip
+  sl:             "sl",       // /sl/ — as in slip
+  sm:             "sm",       // /sm/ — as in smell
+  sn:             "sn",       // /sn/ — as in snap
+  sp:             "sp",       // /sp/ — as in spot
+  st:             "st",       // /st/ — as in step
+  sw:             "sw",       // /sw/ — as in swim
+  tr:             "tr",       // /tr/ — as in trip
+  tw:             "tw",       // /tw/ — as in twin
   ai:             "ay",       // /eɪ/ — as in rain
   ee:             "ee",       // /iː/ — as in tree
   oa:             "oh",       // /əʊ/ — as in boat
   igh:            "eye",      // /aɪ/ — as in night
   oo_long:        "oo",       // /uː/ — as in moon
   oo_short:       "oo",       // /ʊ/  — as in book (shorter)
+  // Level 6 — Magic E patterns
+  a_e:            "ay",       // /eɪ/ — as in made
+  i_e:            "eye",      // /aɪ/ — as in five
+  o_e:            "oh",       // /əʊ/ — as in home
+  u_e:            "oo",       // /uː/ — as in tube
   ar:             "ar",       // /ɑː/ — as in car
   or:             "or",       // /ɔː/ — as in for
   ur:             "er",       // /ɜː/ — as in turn
@@ -91,6 +135,10 @@ const PHONEME_SPOKEN_AS = {
   ow_soft:        "oh",       // /əʊ/ — as in snow
   ie_long:        "eye",      // /aɪ/ — as in pie
   ie_short:       "ee",       // /iː/ — as in chief
+  // Level 7 — Diphthongs
+  oi:             "oy",       // /ɔɪ/ — as in join
+  ou:             "ow",       // /aʊ/ — as in out
+  oy:             "oy",       // /ɔɪ/ — as in boy
   aw:             "aw",       // /ɔː/ — as in saw
   au:             "aw",       // /ɔː/ — as in author
   air:            "air",      // /ɛː/ — as in fair
@@ -106,6 +154,8 @@ const PHONEME_SPOKEN_AS = {
   wr:             "r",        // /r/  — silent w, as in write
   ph:             "f",        // /f/  — as in phone
   wh:             "w",        // /w/  — as in when
+  gn:             "n",        // /n/  — silent g, as in gnome
+  mb:             "m",        // /m/  — silent b, as in lamb
   suffix_s:       "s",        // /s/  — as in cats
   suffix_ing:     "ing",      // /ɪŋ/ — as in jumping
   suffix_ed:      "ed",       // /d/  — as in jumped
