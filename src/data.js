@@ -4,6 +4,14 @@
 export const LEVELS = [
   {
     id: 1,
+    name: "Rock Pool",
+    emoji: "🐚",
+    description: "First letter sounds",
+    color: "#FFB347",
+    gpcs: ["ff", "ll", "ss", "zz", "ck", "nk"],
+  },
+  {
+    id: 2,
     name: "Coral Cove",
     emoji: "🪸",
     description: "Common vowel sounds",
@@ -11,7 +19,7 @@ export const LEVELS = [
     gpcs: ["ai", "ee", "oa", "igh", "oo_long", "oo_short", "ar", "or", "ur"],
   },
   {
-    id: 2,
+    id: 3,
     name: "Kelp Forest",
     emoji: "🌿",
     description: "Alternative vowel sounds",
@@ -19,7 +27,7 @@ export const LEVELS = [
     gpcs: ["ea_long", "ea_short", "er_stressed", "er_unstressed", "ow_loud", "ow_soft", "ie_long", "ie_short"],
   },
   {
-    id: 3,
+    id: 4,
     name: "Deep Blue",
     emoji: "🌊",
     description: "Tricky patterns",
@@ -27,7 +35,7 @@ export const LEVELS = [
     gpcs: ["aw", "au", "air", "ear_near", "ear_bear", "are", "ue", "ew", "oe"],
   },
   {
-    id: 4,
+    id: 5,
     name: "Shipwreck Bay",
     emoji: "⚓",
     description: "Consonant patterns",
@@ -35,7 +43,7 @@ export const LEVELS = [
     gpcs: ["tch", "dge", "kn", "wr", "ph", "wh"],
   },
   {
-    id: 5,
+    id: 6,
     name: "Treasure Trove",
     emoji: "💎",
     description: "Word building",
@@ -45,7 +53,81 @@ export const LEVELS = [
 ];
 
 export const GPCS = {
-  // LEVEL 1 — Common vowel digraphs
+  // LEVEL 1 — Foundation: doubled consonants (simplest Year 1 patterns)
+  ff: {
+    grapheme: "ff",
+    sound: "/f/",
+    hint: "double F — same sound as F",
+    words: [
+      { word: "off",   gap: [0, 1], display: "__f",    answer: "ff", distractors: ["f", "ph"] },
+      { word: "cliff", gap: [2, 3], display: "cl__",   answer: "ff", distractors: ["f", "ph"] },
+      { word: "huff",  gap: [1, 2], display: "h__",    answer: "ff", distractors: ["f", "ph"] },
+      { word: "stiff", gap: [2, 3], display: "st__",   answer: "ff", distractors: ["f", "ph"] },
+      { word: "sniff", gap: [2, 3], display: "sn__",   answer: "ff", distractors: ["f", "v"]  },
+    ],
+  },
+  ll: {
+    grapheme: "ll",
+    sound: "/l/",
+    hint: "double L — same sound as L",
+    words: [
+      { word: "bell",  gap: [1, 2], display: "b__",    answer: "ll", distractors: ["l", "le"] },
+      { word: "fill",  gap: [1, 2], display: "f__",    answer: "ll", distractors: ["l", "le"] },
+      { word: "tall",  gap: [1, 2], display: "t__",    answer: "ll", distractors: ["l", "al"] },
+      { word: "spell", gap: [2, 3], display: "sp__",   answer: "ll", distractors: ["l", "le"] },
+      { word: "hill",  gap: [1, 2], display: "h__",    answer: "ll", distractors: ["l", "le"] },
+    ],
+  },
+  ss: {
+    grapheme: "ss",
+    sound: "/s/",
+    hint: "double S — same sound as S",
+    words: [
+      { word: "miss",  gap: [1, 2], display: "m__",    answer: "ss", distractors: ["s", "ce"] },
+      { word: "fuss",  gap: [1, 2], display: "f__",    answer: "ss", distractors: ["s", "ce"] },
+      { word: "class", gap: [2, 3], display: "cl__",   answer: "ss", distractors: ["s", "se"] },
+      { word: "press", gap: [2, 3], display: "pr__",   answer: "ss", distractors: ["s", "se"] },
+      { word: "kiss",  gap: [1, 2], display: "k__",    answer: "ss", distractors: ["s", "ce"] },
+    ],
+  },
+  zz: {
+    grapheme: "zz",
+    sound: "/z/",
+    hint: "double Z — buzzy sound!",
+    words: [
+      { word: "buzz",  gap: [1, 2], display: "b__",    answer: "zz", distractors: ["z", "s"]  },
+      { word: "fizz",  gap: [1, 2], display: "f__",    answer: "zz", distractors: ["z", "s"]  },
+      { word: "jazz",  gap: [1, 2], display: "j__",    answer: "zz", distractors: ["z", "s"]  },
+      { word: "fuzz",  gap: [1, 2], display: "f__",    answer: "zz", distractors: ["z", "s"]  },
+      { word: "fizzy", gap: [1, 2], display: "f__y",   answer: "zz", distractors: ["z", "s"]  },
+    ],
+  },
+  ck: {
+    grapheme: "ck",
+    sound: "/k/",
+    hint: "C and K together — same sound as K",
+    words: [
+      { word: "back",  gap: [1, 2], display: "b__",    answer: "ck", distractors: ["k", "c"]  },
+      { word: "neck",  gap: [1, 2], display: "n__",    answer: "ck", distractors: ["k", "c"]  },
+      { word: "kick",  gap: [1, 2], display: "k__",    answer: "ck", distractors: ["k", "c"]  },
+      { word: "sock",  gap: [1, 2], display: "s__",    answer: "ck", distractors: ["k", "c"]  },
+      { word: "duck",  gap: [1, 2], display: "d__",    answer: "ck", distractors: ["k", "c"]  },
+    ],
+  },
+  nk: {
+    grapheme: "nk",
+    sound: "/ŋk/",
+    hint: "N and K together — think, bank",
+    words: [
+      { word: "bank",  gap: [1, 2], display: "b__",    answer: "nk", distractors: ["ng", "nc"] },
+      { word: "sink",  gap: [1, 2], display: "s__",    answer: "nk", distractors: ["ng", "nc"] },
+      { word: "drink", gap: [2, 3], display: "dr__",   answer: "nk", distractors: ["ng", "nc"] },
+      { word: "blank", gap: [2, 3], display: "bl__",   answer: "nk", distractors: ["ng", "nc"] },
+      { word: "trunk", gap: [2, 3], display: "tr__",   answer: "nk", distractors: ["ng", "nc"] },
+    ],
+  },
+
+  // LEVEL 2 — Common vowel digraphs
   ai: {
     grapheme: "ai",
     sound: "/eɪ/",
