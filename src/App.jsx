@@ -244,7 +244,7 @@ function HomeScreen({ onStart, audioEnabled, onToggleAudio }) {
 // ─── Screen: Level Map ────────────────────────────────────────────────────────
 
 function LevelMap({ progress, onSelectLevel, onBack }) {
-  const creatures = ["🐚", "🐠", "🐙", "🦈", "🦑", "🐋"];
+  const creatures = ["🐚", "🐠", "🌾", "🐡", "🪸", "🌿", "🌊", "⚓", "💎"];
 
   return (
     <div>

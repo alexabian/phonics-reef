@@ -4,46 +4,70 @@
 export const LEVELS = [
   {
     id: 1,
-    name: "Rock Pool",
-    emoji: "🐚",
-    description: "First letter sounds",
-    color: "#FFB347",
-    gpcs: ["ff", "ll", "ss", "zz", "ck", "nk"],
+    name: "Shallow Shore",
+    emoji: "🏝️",
+    description: "Short vowels",
+    color: "#FCD34D",
+    gpcs: ["short_a", "short_e", "short_i", "short_o", "short_u"],
   },
   {
     id: 2,
+    name: "Rock Pool",
+    emoji: "🐚",
+    description: "Doubled consonants",
+    color: "#FFB347",
+    gpcs: ["ff", "ll", "ss", "zz", "ck", "nk", "bb", "dd", "pp", "rr", "tt"],
+  },
+  {
+    id: 3,
+    name: "Seagrass Bed",
+    emoji: "🌾",
+    description: "Consonant digraphs",
+    color: "#86EFAC",
+    gpcs: ["sh", "ch", "th", "ng"],
+  },
+  {
+    id: 4,
+    name: "Reef Flats",
+    emoji: "🐡",
+    description: "Consonant blends",
+    color: "#67E8F9",
+    gpcs: ["bl", "br", "cl", "cr", "dr", "fl", "fr", "gl", "gr", "pl", "pr", "sk", "sl", "sm", "sn", "sp", "st", "sw", "tr", "tw"],
+  },
+  {
+    id: 5,
     name: "Coral Cove",
     emoji: "🪸",
-    description: "Common vowel sounds",
+    description: "Common vowel digraphs",
     color: "#FF6B6B",
     gpcs: ["ai", "ee", "oa", "igh", "oo_long", "oo_short", "ar", "or", "ur"],
   },
   {
-    id: 3,
+    id: 6,
     name: "Kelp Forest",
     emoji: "🌿",
-    description: "Alternative vowel sounds",
+    description: "Long vowels + magic E",
     color: "#4ECDC4",
-    gpcs: ["ea_long", "ea_short", "er_stressed", "er_unstressed", "ow_loud", "ow_soft", "ie_long", "ie_short"],
+    gpcs: ["a_e", "i_e", "o_e", "u_e", "ea_long", "ea_short", "er_stressed", "er_unstressed", "ow_loud", "ow_soft", "ie_long", "ie_short"],
   },
   {
-    id: 4,
+    id: 7,
     name: "Deep Blue",
     emoji: "🌊",
-    description: "Tricky patterns",
+    description: "Diphthongs + tricky vowels",
     color: "#45B7D1",
-    gpcs: ["aw", "au", "air", "ear_near", "ear_bear", "are", "ue", "ew", "oe"],
+    gpcs: ["oi", "ou", "oy", "aw", "au", "air", "ear_near", "ear_bear", "are", "ue", "ew", "oe"],
   },
   {
-    id: 5,
+    id: 8,
     name: "Shipwreck Bay",
     emoji: "⚓",
-    description: "Consonant patterns",
+    description: "Silent/tricky consonants",
     color: "#96CEB4",
-    gpcs: ["tch", "dge", "kn", "wr", "ph", "wh"],
+    gpcs: ["tch", "dge", "kn", "wr", "ph", "wh", "gn", "mb"],
   },
   {
-    id: 6,
+    id: 9,
     name: "Treasure Trove",
     emoji: "💎",
     description: "Word building",
@@ -53,7 +77,69 @@ export const LEVELS = [
 ];
 
 export const GPCS = {
-  // LEVEL 1 — Foundation: doubled consonants (simplest Year 1 patterns)
+  // LEVEL 1 — Short vowels
+  short_a: {
+    grapheme: "a",
+    sound: "/æ/",
+    hint: "short A — as in cat",
+    words: [
+      { word: "cat", gap: [1, 1], display: "c_t", answer: "a", distractors: ["e", "i", "o"] },
+      { word: "bag", gap: [1, 1], display: "b_g", answer: "a", distractors: ["e", "i", "o"] },
+      { word: "hat", gap: [1, 1], display: "h_t", answer: "a", distractors: ["e", "i", "o"] },
+      { word: "man", gap: [1, 1], display: "m_n", answer: "a", distractors: ["e", "i", "o"] },
+      { word: "tap", gap: [1, 1], display: "t_p", answer: "a", distractors: ["e", "i", "o"] },
+    ],
+  },
+  short_e: {
+    grapheme: "e",
+    sound: "/ɛ/",
+    hint: "short E — as in bed",
+    words: [
+      { word: "bed", gap: [1, 1], display: "b_d", answer: "e", distractors: ["a", "i", "u"] },
+      { word: "hen", gap: [1, 1], display: "h_n", answer: "e", distractors: ["a", "i", "u"] },
+      { word: "leg", gap: [1, 1], display: "l_g", answer: "e", distractors: ["a", "i", "u"] },
+      { word: "pet", gap: [1, 1], display: "p_t", answer: "e", distractors: ["a", "i", "u"] },
+      { word: "web", gap: [1, 1], display: "w_b", answer: "e", distractors: ["a", "i", "u"] },
+    ],
+  },
+  short_i: {
+    grapheme: "i",
+    sound: "/ɪ/",
+    hint: "short I — as in big",
+    words: [
+      { word: "big", gap: [1, 1], display: "b_g", answer: "i", distractors: ["a", "e", "u"] },
+      { word: "dip", gap: [1, 1], display: "d_p", answer: "i", distractors: ["a", "e", "u"] },
+      { word: "fin", gap: [1, 1], display: "f_n", answer: "i", distractors: ["a", "e", "u"] },
+      { word: "hit", gap: [1, 1], display: "h_t", answer: "i", distractors: ["a", "e", "u"] },
+      { word: "pig", gap: [1, 1], display: "p_g", answer: "i", distractors: ["a", "e", "u"] },
+    ],
+  },
+  short_o: {
+    grapheme: "o",
+    sound: "/ɒ/",
+    hint: "short O — as in dog",
+    words: [
+      { word: "dog", gap: [1, 1], display: "d_g", answer: "o", distractors: ["a", "i", "u"] },
+      { word: "fog", gap: [1, 1], display: "f_g", answer: "o", distractors: ["a", "i", "u"] },
+      { word: "hop", gap: [1, 1], display: "h_p", answer: "o", distractors: ["a", "i", "u"] },
+      { word: "log", gap: [1, 1], display: "l_g", answer: "o", distractors: ["a", "i", "u"] },
+      { word: "pot", gap: [1, 1], display: "p_t", answer: "o", distractors: ["a", "i", "u"] },
+    ],
+  },
+  short_u: {
+    grapheme: "u",
+    sound: "/ʌ/",
+    hint: "short U — as in bus",
+    words: [
+      { word: "bus", gap: [1, 1], display: "b_s", answer: "u", distractors: ["a", "i", "o"] },
+      { word: "cut", gap: [1, 1], display: "c_t", answer: "u", distractors: ["a", "i", "o"] },
+      { word: "fun", gap: [1, 1], display: "f_n", answer: "u", distractors: ["a", "i", "o"] },
+      { word: "mug", gap: [1, 1], display: "m_g", answer: "u", distractors: ["a", "i", "o"] },
+      { word: "run", gap: [1, 1], display: "r_n", answer: "u", distractors: ["a", "i", "o"] },
+    ],
+  },
+
+  // LEVEL 2 — Foundation: doubled consonants (simplest Year 1 patterns)
   ff: {
     grapheme: "ff",
     sound: "/f/",
@@ -127,7 +213,372 @@ export const GPCS = {
     ],
   },
 
-  // LEVEL 2 — Common vowel digraphs
+  bb: {
+    grapheme: "bb",
+    sound: "/b/",
+    hint: "double B",
+    words: [
+      { word: "rabbit",  gap: [2, 3], display: "ra__it",  answer: "bb", distractors: ["b", "pp", "dd"] },
+      { word: "bubble",  gap: [2, 3], display: "bu__le",  answer: "bb", distractors: ["b", "pp", "dd"] },
+      { word: "hobby",   gap: [2, 3], display: "ho__y",   answer: "bb", distractors: ["b", "pp", "dd"] },
+      { word: "dribble", gap: [3, 4], display: "dri__le", answer: "bb", distractors: ["b", "pp", "dd"] },
+      { word: "cobble",  gap: [2, 3], display: "co__le",  answer: "bb", distractors: ["b", "pp", "dd"] },
+    ],
+  },
+  dd: {
+    grapheme: "dd",
+    sound: "/d/",
+    hint: "double D",
+    words: [
+      { word: "odd",    gap: [1, 2], display: "o__",    answer: "dd", distractors: ["d", "tt", "bb"] },
+      { word: "muddy",  gap: [2, 3], display: "mu__y",  answer: "dd", distractors: ["d", "tt", "bb"] },
+      { word: "paddle", gap: [2, 3], display: "pa__le", answer: "dd", distractors: ["d", "tt", "bb"] },
+      { word: "middle", gap: [2, 3], display: "mi__le", answer: "dd", distractors: ["d", "tt", "bb"] },
+      { word: "puddle", gap: [2, 3], display: "pu__le", answer: "dd", distractors: ["d", "tt", "bb"] },
+    ],
+  },
+  nn: {
+    grapheme: "nn",
+    sound: "/n/",
+    hint: "double N",
+    words: [
+      { word: "funny",   gap: [2, 3], display: "fu__y",   answer: "nn", distractors: ["n", "mm", "rr"] },
+      { word: "running", gap: [2, 3], display: "ru__ing", answer: "nn", distractors: ["n", "mm", "rr"] },
+      { word: "tennis",  gap: [2, 3], display: "te__is",  answer: "nn", distractors: ["n", "mm", "rr"] },
+      { word: "nanny",   gap: [2, 3], display: "na__y",   answer: "nn", distractors: ["n", "mm", "rr"] },
+      { word: "sunny",   gap: [2, 3], display: "su__y",   answer: "nn", distractors: ["n", "mm", "rr"] },
+    ],
+  },
+  pp: {
+    grapheme: "pp",
+    sound: "/p/",
+    hint: "double P",
+    words: [
+      { word: "happy",  gap: [2, 3], display: "ha__y",  answer: "pp", distractors: ["p", "bb", "tt"] },
+      { word: "pepper", gap: [2, 3], display: "pe__er", answer: "pp", distractors: ["p", "bb", "tt"] },
+      { word: "copper", gap: [2, 3], display: "co__er", answer: "pp", distractors: ["p", "bb", "tt"] },
+      { word: "puppy",  gap: [2, 3], display: "pu__y",  answer: "pp", distractors: ["p", "bb", "tt"] },
+      { word: "supper", gap: [2, 3], display: "su__er", answer: "pp", distractors: ["p", "bb", "tt"] },
+    ],
+  },
+  rr: {
+    grapheme: "rr",
+    sound: "/r/",
+    hint: "double R",
+    words: [
+      { word: "arrow",  gap: [1, 2], display: "a__ow",  answer: "rr", distractors: ["r", "nn", "ll"] },
+      { word: "carrot", gap: [2, 3], display: "ca__ot", answer: "rr", distractors: ["r", "nn", "ll"] },
+      { word: "sorry",  gap: [2, 3], display: "so__y",  answer: "rr", distractors: ["r", "nn", "ll"] },
+      { word: "hurry",  gap: [2, 3], display: "hu__y",  answer: "rr", distractors: ["r", "nn", "ll"] },
+      { word: "parrot", gap: [2, 3], display: "pa__ot", answer: "rr", distractors: ["r", "nn", "ll"] },
+    ],
+  },
+  tt: {
+    grapheme: "tt",
+    sound: "/t/",
+    hint: "double T",
+    words: [
+      { word: "attic",  gap: [1, 2], display: "a__ic",  answer: "tt", distractors: ["t", "dd", "pp"] },
+      { word: "butter", gap: [2, 3], display: "bu__er", answer: "tt", distractors: ["t", "dd", "pp"] },
+      { word: "kitten", gap: [2, 3], display: "ki__en", answer: "tt", distractors: ["t", "dd", "pp"] },
+      { word: "mitten", gap: [2, 3], display: "mi__en", answer: "tt", distractors: ["t", "dd", "pp"] },
+      { word: "cotton", gap: [2, 3], display: "co__on", answer: "tt", distractors: ["t", "dd", "pp"] },
+    ],
+  },
+
+  // LEVEL 3 — Consonant digraphs
+  sh: {
+    grapheme: "sh",
+    sound: "/ʃ/",
+    hint: "SH — like putting your finger to your lips",
+    words: [
+      { word: "ship",  gap: [0, 1], display: "__ip",  answer: "sh", distractors: ["ch", "th", "wh"] },
+      { word: "fish",  gap: [2, 3], display: "fi__",  answer: "sh", distractors: ["ch", "th", "wh"] },
+      { word: "shell", gap: [0, 1], display: "__ell", answer: "sh", distractors: ["ch", "th", "wh"] },
+      { word: "shop",  gap: [0, 1], display: "__op",  answer: "sh", distractors: ["ch", "th", "wh"] },
+      { word: "rush",  gap: [2, 3], display: "ru__",  answer: "sh", distractors: ["ch", "th", "wh"] },
+    ],
+  },
+  ch: {
+    grapheme: "ch",
+    sound: "/tʃ/",
+    hint: "CH — like a train!",
+    words: [
+      { word: "chip", gap: [0, 1], display: "__ip", answer: "ch", distractors: ["sh", "th", "wh"] },
+      { word: "chin", gap: [0, 1], display: "__in", answer: "ch", distractors: ["sh", "th", "wh"] },
+      { word: "much", gap: [2, 3], display: "mu__", answer: "ch", distractors: ["sh", "th", "wh"] },
+      { word: "such", gap: [2, 3], display: "su__", answer: "ch", distractors: ["sh", "th", "wh"] },
+      { word: "rich", gap: [2, 3], display: "ri__", answer: "ch", distractors: ["sh", "th", "wh"] },
+    ],
+  },
+  th: {
+    grapheme: "th",
+    sound: "/θ/",
+    hint: "TH — tongue between your teeth",
+    words: [
+      { word: "this",  gap: [0, 1], display: "__is",  answer: "th", distractors: ["sh", "ch", "wh"] },
+      { word: "that",  gap: [0, 1], display: "__at",  answer: "th", distractors: ["sh", "ch", "wh"] },
+      { word: "thin",  gap: [0, 1], display: "__in",  answer: "th", distractors: ["sh", "ch", "wh"] },
+      { word: "thick", gap: [0, 1], display: "__ick", answer: "th", distractors: ["sh", "ch", "wh"] },
+      { word: "with",  gap: [2, 3], display: "wi__",  answer: "th", distractors: ["sh", "ch", "wh"] },
+    ],
+  },
+  ng: {
+    grapheme: "ng",
+    sound: "/ŋ/",
+    hint: "NG — the humming sound at the end",
+    words: [
+      { word: "ring", gap: [2, 3], display: "ri__", answer: "ng", distractors: ["nk", "nt", "nd"] },
+      { word: "song", gap: [2, 3], display: "so__", answer: "ng", distractors: ["nk", "nt", "nd"] },
+      { word: "long", gap: [2, 3], display: "lo__", answer: "ng", distractors: ["nk", "nt", "nd"] },
+      { word: "bang", gap: [2, 3], display: "ba__", answer: "ng", distractors: ["nk", "nt", "nd"] },
+      { word: "king", gap: [2, 3], display: "ki__", answer: "ng", distractors: ["nk", "nt", "nd"] },
+    ],
+  },
+
+  // LEVEL 4 — Consonant blends
+  bl: {
+    grapheme: "bl",
+    sound: "/bl/",
+    hint: "B and L blend",
+    words: [
+      { word: "black", gap: [0, 1], display: "__ack",  answer: "bl", distractors: ["cl", "fl", "sl"] },
+      { word: "blue",  gap: [0, 1], display: "__ue",   answer: "bl", distractors: ["cl", "fl", "sl"] },
+      { word: "blow",  gap: [0, 1], display: "__ow",   answer: "bl", distractors: ["cl", "fl", "sl"] },
+      { word: "blank", gap: [0, 1], display: "__ank",  answer: "bl", distractors: ["cl", "fl", "sl"] },
+      { word: "bless", gap: [0, 1], display: "__ess",  answer: "bl", distractors: ["cl", "fl", "sl"] },
+    ],
+  },
+  br: {
+    grapheme: "br",
+    sound: "/br/",
+    hint: "B and R blend",
+    words: [
+      { word: "bread",  gap: [0, 1], display: "__ead",  answer: "br", distractors: ["cr", "dr", "tr"] },
+      { word: "brick",  gap: [0, 1], display: "__ick",  answer: "br", distractors: ["cr", "dr", "tr"] },
+      { word: "brown",  gap: [0, 1], display: "__own",  answer: "br", distractors: ["cr", "dr", "tr"] },
+      { word: "bring",  gap: [0, 1], display: "__ing",  answer: "br", distractors: ["cr", "dr", "tr"] },
+      { word: "brush",  gap: [0, 1], display: "__ush",  answer: "br", distractors: ["cr", "dr", "tr"] },
+    ],
+  },
+  cl: {
+    grapheme: "cl",
+    sound: "/kl/",
+    hint: "C and L blend",
+    words: [
+      { word: "clap",   gap: [0, 1], display: "__ap",   answer: "cl", distractors: ["bl", "fl", "sl"] },
+      { word: "clam",   gap: [0, 1], display: "__am",   answer: "cl", distractors: ["bl", "fl", "sl"] },
+      { word: "clock",  gap: [0, 1], display: "__ock",  answer: "cl", distractors: ["bl", "fl", "sl"] },
+      { word: "club",   gap: [0, 1], display: "__ub",   answer: "cl", distractors: ["bl", "fl", "sl"] },
+      { word: "clown",  gap: [0, 1], display: "__own",  answer: "cl", distractors: ["bl", "fl", "sl"] },
+    ],
+  },
+  cr: {
+    grapheme: "cr",
+    sound: "/kr/",
+    hint: "C and R blend",
+    words: [
+      { word: "crab",  gap: [0, 1], display: "__ab",  answer: "cr", distractors: ["br", "dr", "tr"] },
+      { word: "cram",  gap: [0, 1], display: "__am",  answer: "cr", distractors: ["br", "dr", "tr"] },
+      { word: "crop",  gap: [0, 1], display: "__op",  answer: "cr", distractors: ["br", "dr", "tr"] },
+      { word: "crow",  gap: [0, 1], display: "__ow",  answer: "cr", distractors: ["br", "dr", "tr"] },
+      { word: "crush", gap: [0, 1], display: "__ush", answer: "cr", distractors: ["br", "dr", "tr"] },
+    ],
+  },
+  dr: {
+    grapheme: "dr",
+    sound: "/dr/",
+    hint: "D and R blend",
+    words: [
+      { word: "drum",  gap: [0, 1], display: "__um",  answer: "dr", distractors: ["br", "cr", "tr"] },
+      { word: "drip",  gap: [0, 1], display: "__ip",  answer: "dr", distractors: ["br", "cr", "tr"] },
+      { word: "drop",  gap: [0, 1], display: "__op",  answer: "dr", distractors: ["br", "cr", "tr"] },
+      { word: "drag",  gap: [0, 1], display: "__ag",  answer: "dr", distractors: ["br", "cr", "tr"] },
+      { word: "dress", gap: [0, 1], display: "__ess", answer: "dr", distractors: ["br", "cr", "tr"] },
+    ],
+  },
+  fl: {
+    grapheme: "fl",
+    sound: "/fl/",
+    hint: "F and L blend",
+    words: [
+      { word: "flag",   gap: [0, 1], display: "__ag",   answer: "fl", distractors: ["bl", "cl", "sl"] },
+      { word: "flat",   gap: [0, 1], display: "__at",   answer: "fl", distractors: ["bl", "cl", "sl"] },
+      { word: "flip",   gap: [0, 1], display: "__ip",   answer: "fl", distractors: ["bl", "cl", "sl"] },
+      { word: "flock",  gap: [0, 1], display: "__ock",  answer: "fl", distractors: ["bl", "cl", "sl"] },
+      { word: "fled",   gap: [0, 1], display: "__ed",   answer: "fl", distractors: ["bl", "cl", "sl"] },
+    ],
+  },
+  fr: {
+    grapheme: "fr",
+    sound: "/fr/",
+    hint: "F and R blend",
+    words: [
+      { word: "frog",   gap: [0, 1], display: "__og",   answer: "fr", distractors: ["br", "cr", "dr"] },
+      { word: "from",   gap: [0, 1], display: "__om",   answer: "fr", distractors: ["br", "cr", "dr"] },
+      { word: "free",   gap: [0, 1], display: "__ee",   answer: "fr", distractors: ["br", "cr", "dr"] },
+      { word: "frill",  gap: [0, 1], display: "__ill",  answer: "fr", distractors: ["br", "cr", "dr"] },
+      { word: "frost",  gap: [0, 1], display: "__ost",  answer: "fr", distractors: ["br", "cr", "dr"] },
+    ],
+  },
+  gl: {
+    grapheme: "gl",
+    sound: "/gl/",
+    hint: "G and L blend",
+    words: [
+      { word: "glad",  gap: [0, 1], display: "__ad",  answer: "gl", distractors: ["bl", "cl", "fl"] },
+      { word: "glass", gap: [0, 1], display: "__ass", answer: "gl", distractors: ["bl", "cl", "fl"] },
+      { word: "glow",  gap: [0, 1], display: "__ow",  answer: "gl", distractors: ["bl", "cl", "fl"] },
+      { word: "glue",  gap: [0, 1], display: "__ue",  answer: "gl", distractors: ["bl", "cl", "fl"] },
+      { word: "glen",  gap: [0, 1], display: "__en",  answer: "gl", distractors: ["bl", "cl", "fl"] },
+    ],
+  },
+  gr: {
+    grapheme: "gr",
+    sound: "/gr/",
+    hint: "G and R blend",
+    words: [
+      { word: "grab",  gap: [0, 1], display: "__ab",  answer: "gr", distractors: ["br", "cr", "dr"] },
+      { word: "green", gap: [0, 1], display: "__een", answer: "gr", distractors: ["br", "cr", "dr"] },
+      { word: "grew",  gap: [0, 1], display: "__ew",  answer: "gr", distractors: ["br", "cr", "dr"] },
+      { word: "grin",  gap: [0, 1], display: "__in",  answer: "gr", distractors: ["br", "cr", "dr"] },
+      { word: "grip",  gap: [0, 1], display: "__ip",  answer: "gr", distractors: ["br", "cr", "dr"] },
+    ],
+  },
+  pl: {
+    grapheme: "pl",
+    sound: "/pl/",
+    hint: "P and L blend",
+    words: [
+      { word: "plan", gap: [0, 1], display: "__an", answer: "pl", distractors: ["bl", "cl", "fl"] },
+      { word: "play", gap: [0, 1], display: "__ay", answer: "pl", distractors: ["bl", "cl", "fl"] },
+      { word: "plop", gap: [0, 1], display: "__op", answer: "pl", distractors: ["bl", "cl", "fl"] },
+      { word: "plug", gap: [0, 1], display: "__ug", answer: "pl", distractors: ["bl", "cl", "fl"] },
+      { word: "plum", gap: [0, 1], display: "__um", answer: "pl", distractors: ["bl", "cl", "fl"] },
+    ],
+  },
+  pr: {
+    grapheme: "pr",
+    sound: "/pr/",
+    hint: "P and R blend",
+    words: [
+      { word: "print", gap: [0, 1], display: "__int", answer: "pr", distractors: ["br", "cr", "dr"] },
+      { word: "prod",  gap: [0, 1], display: "__od",  answer: "pr", distractors: ["br", "cr", "dr"] },
+      { word: "prop",  gap: [0, 1], display: "__op",  answer: "pr", distractors: ["br", "cr", "dr"] },
+      { word: "pray",  gap: [0, 1], display: "__ay",  answer: "pr", distractors: ["br", "cr", "dr"] },
+      { word: "pram",  gap: [0, 1], display: "__am",  answer: "pr", distractors: ["br", "cr", "dr"] },
+    ],
+  },
+  sk: {
+    grapheme: "sk",
+    sound: "/sk/",
+    hint: "S and K blend",
+    words: [
+      { word: "skip",  gap: [0, 1], display: "__ip",  answer: "sk", distractors: ["sl", "sm", "sn"] },
+      { word: "skin",  gap: [0, 1], display: "__in",  answer: "sk", distractors: ["sl", "sm", "sn"] },
+      { word: "sky",   gap: [0, 1], display: "__y",   answer: "sk", distractors: ["sl", "sm", "sn"] },
+      { word: "skull", gap: [0, 1], display: "__ull", answer: "sk", distractors: ["sl", "sm", "sn"] },
+      { word: "skid",  gap: [0, 1], display: "__id",  answer: "sk", distractors: ["sl", "sm", "sn"] },
+    ],
+  },
+  sl: {
+    grapheme: "sl",
+    sound: "/sl/",
+    hint: "S and L blend",
+    words: [
+      { word: "slip", gap: [0, 1], display: "__ip", answer: "sl", distractors: ["bl", "cl", "fl"] },
+      { word: "slow", gap: [0, 1], display: "__ow", answer: "sl", distractors: ["bl", "cl", "fl"] },
+      { word: "slam", gap: [0, 1], display: "__am", answer: "sl", distractors: ["bl", "cl", "fl"] },
+      { word: "slap", gap: [0, 1], display: "__ap", answer: "sl", distractors: ["bl", "cl", "fl"] },
+      { word: "slim", gap: [0, 1], display: "__im", answer: "sl", distractors: ["bl", "cl", "fl"] },
+    ],
+  },
+  sm: {
+    grapheme: "sm",
+    sound: "/sm/",
+    hint: "S and M blend",
+    words: [
+      { word: "smell", gap: [0, 1], display: "__ell",  answer: "sm", distractors: ["sn", "sp", "st"] },
+      { word: "smile", gap: [0, 1], display: "__ile",  answer: "sm", distractors: ["sn", "sp", "st"] },
+      { word: "small", gap: [0, 1], display: "__all",  answer: "sm", distractors: ["sn", "sp", "st"] },
+      { word: "smash", gap: [0, 1], display: "__ash",  answer: "sm", distractors: ["sn", "sp", "st"] },
+      { word: "smug",  gap: [0, 1], display: "__ug",   answer: "sm", distractors: ["sn", "sp", "st"] },
+    ],
+  },
+  sn: {
+    grapheme: "sn",
+    sound: "/sn/",
+    hint: "S and N blend",
+    words: [
+      { word: "snap", gap: [0, 1], display: "__ap", answer: "sn", distractors: ["sm", "sp", "st"] },
+      { word: "snow", gap: [0, 1], display: "__ow", answer: "sn", distractors: ["sm", "sp", "st"] },
+      { word: "snag", gap: [0, 1], display: "__ag", answer: "sn", distractors: ["sm", "sp", "st"] },
+      { word: "snip", gap: [0, 1], display: "__ip", answer: "sn", distractors: ["sm", "sp", "st"] },
+      { word: "snob", gap: [0, 1], display: "__ob", answer: "sn", distractors: ["sm", "sp", "st"] },
+    ],
+  },
+  sp: {
+    grapheme: "sp",
+    sound: "/sp/",
+    hint: "S and P blend",
+    words: [
+      { word: "spot", gap: [0, 1], display: "__ot", answer: "sp", distractors: ["sk", "sl", "st"] },
+      { word: "spin", gap: [0, 1], display: "__in", answer: "sp", distractors: ["sk", "sl", "st"] },
+      { word: "span", gap: [0, 1], display: "__an", answer: "sp", distractors: ["sk", "sl", "st"] },
+      { word: "spud", gap: [0, 1], display: "__ud", answer: "sp", distractors: ["sk", "sl", "st"] },
+      { word: "spit", gap: [0, 1], display: "__it", answer: "sp", distractors: ["sk", "sl", "st"] },
+    ],
+  },
+  st: {
+    grapheme: "st",
+    sound: "/st/",
+    hint: "S and T blend",
+    words: [
+      { word: "step", gap: [0, 1], display: "__ep", answer: "st", distractors: ["sk", "sl", "sp"] },
+      { word: "stop", gap: [0, 1], display: "__op", answer: "st", distractors: ["sk", "sl", "sp"] },
+      { word: "stem", gap: [0, 1], display: "__em", answer: "st", distractors: ["sk", "sl", "sp"] },
+      { word: "stub", gap: [0, 1], display: "__ub", answer: "st", distractors: ["sk", "sl", "sp"] },
+      { word: "stab", gap: [0, 1], display: "__ab", answer: "st", distractors: ["sk", "sl", "sp"] },
+    ],
+  },
+  sw: {
+    grapheme: "sw",
+    sound: "/sw/",
+    hint: "S and W blend",
+    words: [
+      { word: "swim", gap: [0, 1], display: "__im", answer: "sw", distractors: ["sl", "sm", "sn"] },
+      { word: "swam", gap: [0, 1], display: "__am", answer: "sw", distractors: ["sl", "sm", "sn"] },
+      { word: "swot", gap: [0, 1], display: "__ot", answer: "sw", distractors: ["sl", "sm", "sn"] },
+      { word: "swab", gap: [0, 1], display: "__ab", answer: "sw", distractors: ["sl", "sm", "sn"] },
+      { word: "swum", gap: [0, 1], display: "__um", answer: "sw", distractors: ["sl", "sm", "sn"] },
+    ],
+  },
+  tr: {
+    grapheme: "tr",
+    sound: "/tr/",
+    hint: "T and R blend",
+    words: [
+      { word: "trip", gap: [0, 1], display: "__ip", answer: "tr", distractors: ["br", "cr", "dr"] },
+      { word: "tree", gap: [0, 1], display: "__ee", answer: "tr", distractors: ["br", "cr", "dr"] },
+      { word: "trap", gap: [0, 1], display: "__ap", answer: "tr", distractors: ["br", "cr", "dr"] },
+      { word: "trim", gap: [0, 1], display: "__im", answer: "tr", distractors: ["br", "cr", "dr"] },
+      { word: "trot", gap: [0, 1], display: "__ot", answer: "tr", distractors: ["br", "cr", "dr"] },
+    ],
+  },
+  tw: {
+    grapheme: "tw",
+    sound: "/tw/",
+    hint: "T and W blend",
+    words: [
+      { word: "twin",  gap: [0, 1], display: "__in",   answer: "tw", distractors: ["sw", "tr", "dr"] },
+      { word: "twig",  gap: [0, 1], display: "__ig",   answer: "tw", distractors: ["sw", "tr", "dr"] },
+      { word: "twit",  gap: [0, 1], display: "__it",   answer: "tw", distractors: ["sw", "tr", "dr"] },
+      { word: "twill", gap: [0, 1], display: "__ill",  answer: "tw", distractors: ["sw", "tr", "dr"] },
+      { word: "twang", gap: [0, 1], display: "__ang",  answer: "tw", distractors: ["sw", "tr", "dr"] },
+    ],
+  },
+
+  // LEVEL 5 — Common vowel digraphs
   ai: {
     grapheme: "ai",
     sound: "/eɪ/",
@@ -237,7 +688,57 @@ export const GPCS = {
     ],
   },
 
-  // LEVEL 2 — Alternative vowel sounds
+  // LEVEL 6 — Magic E patterns
+  a_e: {
+    grapheme: "a-e",
+    sound: "/eɪ/",
+    hint: "magic E makes A say its name!",
+    words: [
+      { word: "made", gap: [1, 1], display: "m__de", answer: "a", distractors: ["e", "i", "o"] },
+      { word: "came", gap: [1, 1], display: "c__me", answer: "a", distractors: ["e", "i", "o"] },
+      { word: "same", gap: [1, 1], display: "s__me", answer: "a", distractors: ["e", "i", "o"] },
+      { word: "take", gap: [1, 1], display: "t__ke", answer: "a", distractors: ["e", "i", "o"] },
+      { word: "safe", gap: [1, 1], display: "s__fe", answer: "a", distractors: ["e", "i", "o"] },
+    ],
+  },
+  i_e: {
+    grapheme: "i-e",
+    sound: "/aɪ/",
+    hint: "magic E makes I say its name!",
+    words: [
+      { word: "five", gap: [1, 1], display: "f__ve", answer: "i", distractors: ["a", "e", "o"] },
+      { word: "ride", gap: [1, 1], display: "r__de", answer: "i", distractors: ["a", "e", "o"] },
+      { word: "like", gap: [1, 1], display: "l__ke", answer: "i", distractors: ["a", "e", "o"] },
+      { word: "time", gap: [1, 1], display: "t__me", answer: "i", distractors: ["a", "e", "o"] },
+      { word: "side", gap: [1, 1], display: "s__de", answer: "i", distractors: ["a", "e", "o"] },
+    ],
+  },
+  o_e: {
+    grapheme: "o-e",
+    sound: "/əʊ/",
+    hint: "magic E makes O say its name!",
+    words: [
+      { word: "home", gap: [1, 1], display: "h__me", answer: "o", distractors: ["a", "i", "u"] },
+      { word: "hope", gap: [1, 1], display: "h__pe", answer: "o", distractors: ["a", "i", "u"] },
+      { word: "hole", gap: [1, 1], display: "h__le", answer: "o", distractors: ["a", "i", "u"] },
+      { word: "bone", gap: [1, 1], display: "b__ne", answer: "o", distractors: ["a", "i", "u"] },
+      { word: "woke", gap: [1, 1], display: "w__ke", answer: "o", distractors: ["a", "i", "u"] },
+    ],
+  },
+  u_e: {
+    grapheme: "u-e",
+    sound: "/uː/",
+    hint: "magic E makes U say its name!",
+    words: [
+      { word: "tube", gap: [1, 1], display: "t__be", answer: "u", distractors: ["a", "i", "o"] },
+      { word: "tune", gap: [1, 1], display: "t__ne", answer: "u", distractors: ["a", "i", "o"] },
+      { word: "rule", gap: [1, 1], display: "r__le", answer: "u", distractors: ["a", "i", "o"] },
+      { word: "rude", gap: [1, 1], display: "r__de", answer: "u", distractors: ["a", "i", "o"] },
+      { word: "cube", gap: [1, 1], display: "c__be", answer: "u", distractors: ["a", "i", "o"] },
+    ],
+  },
+
+  // LEVEL 6 — Alternative vowel sounds
   ea_long: {
     grapheme: "ea",
     sound: "/iː/",
@@ -335,7 +836,43 @@ export const GPCS = {
     ],
   },
 
-  // LEVEL 3 — Tricky patterns
+  oi: {
+    grapheme: "oi",
+    sound: "/ɔɪ/",
+    hint: "OI — like saying 'oy!' in surprise",
+    words: [
+      { word: "join",  gap: [1, 2], display: "j__n",  answer: "oi", distractors: ["oy", "ou", "oa"] },
+      { word: "coin",  gap: [1, 2], display: "c__n",  answer: "oi", distractors: ["oy", "ou", "oa"] },
+      { word: "point", gap: [1, 2], display: "p__nt", answer: "oi", distractors: ["oy", "ou", "oa"] },
+      { word: "soil",  gap: [1, 2], display: "s__l",  answer: "oi", distractors: ["oy", "ou", "oa"] },
+      { word: "foil",  gap: [1, 2], display: "f__l",  answer: "oi", distractors: ["oy", "ou", "oa"] },
+    ],
+  },
+  ou: {
+    grapheme: "ou",
+    sound: "/aʊ/",
+    hint: "OU — like saying 'ouch!'",
+    words: [
+      { word: "out",   gap: [0, 1], display: "__t",    answer: "ou", distractors: ["ow", "oa", "oo"] },
+      { word: "mouth", gap: [1, 2], display: "m__th",  answer: "ou", distractors: ["ow", "oa", "oo"] },
+      { word: "sound", gap: [1, 2], display: "s__nd",  answer: "ou", distractors: ["ow", "oa", "oo"] },
+      { word: "cloud", gap: [2, 3], display: "cl__d",  answer: "ou", distractors: ["ow", "oa", "oo"] },
+      { word: "found", gap: [1, 2], display: "f__nd",  answer: "ou", distractors: ["ow", "oa", "oo"] },
+    ],
+  },
+  oy: {
+    grapheme: "oy",
+    sound: "/ɔɪ/",
+    hint: "OY — at the end of words",
+    words: [
+      { word: "boy",   gap: [1, 2], display: "b__",    answer: "oy", distractors: ["oi", "ay", "ow"] },
+      { word: "toy",   gap: [1, 2], display: "t__",    answer: "oy", distractors: ["oi", "ay", "ow"] },
+      { word: "joy",   gap: [1, 2], display: "j__",    answer: "oy", distractors: ["oi", "ay", "ow"] },
+      { word: "enjoy", gap: [3, 4], display: "enj__",  answer: "oy", distractors: ["oi", "ay", "ow"] },
+      { word: "annoy", gap: [3, 4], display: "ann__",  answer: "oy", distractors: ["oi", "ay", "ow"] },
+    ],
+  },
+
   aw: {
     grapheme: "aw",
     sound: "/ɔː/",
@@ -519,7 +1056,32 @@ export const GPCS = {
     ],
   },
 
-  // LEVEL 5 — Word building
+  gn: {
+    grapheme: "gn",
+    sound: "/n/",
+    hint: "the G is silent — just say N!",
+    words: [
+      { word: "gnaw",   gap: [0, 1], display: "__aw",   answer: "gn", distractors: ["n", "kn", "wr"] },
+      { word: "gnat",   gap: [0, 1], display: "__at",   answer: "gn", distractors: ["n", "kn", "wr"] },
+      { word: "gnome",  gap: [0, 1], display: "__ome",  answer: "gn", distractors: ["n", "kn", "wr"] },
+      { word: "gnash",  gap: [0, 1], display: "__ash",  answer: "gn", distractors: ["n", "kn", "wr"] },
+      { word: "gnarled", gap: [0, 1], display: "__arled", answer: "gn", distractors: ["n", "kn", "wr"] },
+    ],
+  },
+  mb: {
+    grapheme: "mb",
+    sound: "/m/",
+    hint: "silent B — the B is quiet!",
+    words: [
+      { word: "lamb",  gap: [2, 3], display: "la__",  answer: "mb", distractors: ["m", "mm", "nd"] },
+      { word: "climb", gap: [3, 4], display: "cli__", answer: "mb", distractors: ["m", "mm", "nd"] },
+      { word: "thumb", gap: [3, 4], display: "thu__", answer: "mb", distractors: ["m", "mm", "nd"] },
+      { word: "comb",  gap: [2, 3], display: "co__",  answer: "mb", distractors: ["m", "mm", "nd"] },
+      { word: "limb",  gap: [2, 3], display: "li__",  answer: "mb", distractors: ["m", "mm", "nd"] },
+    ],
+  },
+
+  // LEVEL 9 — Word building
   suffix_s: {
     grapheme: "-s / -es",
     sound: "plural",
@@ -602,4 +1164,7 @@ export const INITIAL_PROGRESS = {
   4: { unlocked: false, stars: {}, completed: [] },
   5: { unlocked: false, stars: {}, completed: [] },
   6: { unlocked: false, stars: {}, completed: [] },
+  7: { unlocked: false, stars: {}, completed: [] },
+  8: { unlocked: false, stars: {}, completed: [] },
+  9: { unlocked: false, stars: {}, completed: [] },
 };
