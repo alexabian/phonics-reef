@@ -15,7 +15,10 @@ function shuffle(arr) {
 function loadProgress() {
   try {
     const saved = localStorage.getItem("phonicsReefProgress");
-    return saved ? JSON.parse(saved) : INITIAL_PROGRESS;
+    if (!saved) return INITIAL_PROGRESS;
+    // Merge saved data with INITIAL_PROGRESS so new levels are never undefined
+    const parsed = JSON.parse(saved);
+    return { ...INITIAL_PROGRESS, ...parsed };
   } catch {
     return INITIAL_PROGRESS;
   }
@@ -228,7 +231,7 @@ function HomeScreen({ onStart, audioEnabled, onToggleAudio }) {
       </div>
       <div style={{ ...S.card, textAlign: "left", maxWidth: 480, margin: "0 auto" }}>
         <p style={{ ...S.p, margin: 0, fontSize: 14, color: "#e0f2fe" }}>
-          🪸 5 ocean zones to explore<br />
+          🪸 6 ocean zones to explore<br />
           🌟 Earn stars by spotting sounds<br />
           🔓 Unlock deeper waters as you improve<br />
           🎯 5 quick questions per session
@@ -241,7 +244,7 @@ function HomeScreen({ onStart, audioEnabled, onToggleAudio }) {
 // ─── Screen: Level Map ────────────────────────────────────────────────────────
 
 function LevelMap({ progress, onSelectLevel, onBack }) {
-  const creatures = ["🐠", "🐙", "🦈", "🦑", "🐋"];
+  const creatures = ["🐚", "🐠", "🐙", "🦈", "🦑", "🐋"];
 
   return (
     <div>
@@ -619,7 +622,7 @@ export default function App() {
 
       // Unlock next level if avg stars >= 2
       const avg = level.gpcs.reduce((s, id) => s + (lvl.stars[id] || 0), 0) / level.gpcs.length;
-      if (avg >= 2 && lvlId < 5) {
+      if (avg >= 2 && lvlId < LEVELS.length) {
         updated[lvlId + 1] = { ...updated[lvlId + 1], unlocked: true };
       }
       return updated;

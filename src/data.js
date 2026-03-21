@@ -596,9 +596,10 @@ export const GPCS = {
 
 // Initial progress structure
 export const INITIAL_PROGRESS = {
-  1: { unlocked: true, stars: {}, completed: [] },
+  1: { unlocked: true,  stars: {}, completed: [] },
   2: { unlocked: false, stars: {}, completed: [] },
   3: { unlocked: false, stars: {}, completed: [] },
   4: { unlocked: false, stars: {}, completed: [] },
   5: { unlocked: false, stars: {}, completed: [] },
+  6: { unlocked: false, stars: {}, completed: [] },
 };
