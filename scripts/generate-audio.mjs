@@ -92,8 +92,7 @@ console.log("\n── GPC sounds ───────────────�
 let j = 0;
 for (const { id, grapheme, hint } of gpcList) {
   process.stdout.write(`[${String(++j).padStart(3)}/${gpcList.length}] `);
-  // Speak the grapheme letters followed by the hint — gives phonics context
-  const spoken = `${grapheme}... ${hint}`;
+  const spoken = grapheme;
   await generate(id, join(GPCS_DIR, `${id}.mp3`), spoken);
 }
 
