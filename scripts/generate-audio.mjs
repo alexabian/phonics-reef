@@ -63,6 +63,57 @@ async function generate(label, outPath, text) {
   await sleep(350); // stay within rate limits
 }
 
+// ── Phoneme pronunciation map ─────────────────────────────────────────────────
+// Maps each GPC id to the text Alice should speak to produce the correct sound.
+// Using real English words/syllables so TTS doesn't read letters individually.
+
+const PHONEME_SPOKEN_AS = {
+  ff:             "f",        // /f/  — as in off
+  ll:             "l",        // /l/  — as in bell
+  ss:             "s",        // /s/  — as in miss
+  zz:             "z",        // /z/  — as in buzz
+  ck:             "k",        // /k/  — as in back
+  nk:             "nk",       // /ŋk/ — as in bank
+  ai:             "ay",       // /eɪ/ — as in rain
+  ee:             "ee",       // /iː/ — as in tree
+  oa:             "oh",       // /əʊ/ — as in boat
+  igh:            "eye",      // /aɪ/ — as in night
+  oo_long:        "oo",       // /uː/ — as in moon
+  oo_short:       "oo",       // /ʊ/  — as in book (shorter)
+  ar:             "ar",       // /ɑː/ — as in car
+  or:             "or",       // /ɔː/ — as in for
+  ur:             "er",       // /ɜː/ — as in turn
+  ea_long:        "ee",       // /iː/ — as in sea
+  ea_short:       "eh",       // /ɛ/  — as in head
+  er_stressed:    "er",       // /ɜː/ — as in her
+  er_unstressed:  "er",       // /ə/  — as in butter
+  ow_loud:        "ow",       // /aʊ/ — as in now
+  ow_soft:        "oh",       // /əʊ/ — as in snow
+  ie_long:        "eye",      // /aɪ/ — as in pie
+  ie_short:       "ee",       // /iː/ — as in chief
+  aw:             "aw",       // /ɔː/ — as in saw
+  au:             "aw",       // /ɔː/ — as in author
+  air:            "air",      // /ɛː/ — as in fair
+  ear_near:       "ear",      // /ɪə/ — as in near
+  ear_bear:       "air",      // /ɛː/ — as in bear
+  are:            "air",      // /ɛː/ — as in care
+  ue:             "oo",       // /uː/ — as in blue
+  ew:             "oo",       // /uː/ — as in new
+  oe:             "oh",       // /əʊ/ — as in toe
+  tch:            "ch",       // /tʃ/ — as in catch
+  dge:            "j",        // /dʒ/ — as in edge
+  kn:             "n",        // /n/  — silent k, as in knee
+  wr:             "r",        // /r/  — silent w, as in write
+  ph:             "f",        // /f/  — as in phone
+  wh:             "w",        // /w/  — as in when
+  suffix_s:       "s",        // /s/  — as in cats
+  suffix_ing:     "ing",      // /ɪŋ/ — as in jumping
+  suffix_ed:      "ed",       // /d/  — as in jumped
+  prefix_un:      "un",       // /ʌn/ — as in undo
+  compound:       "compound", // descriptive
+  ending_le:      "ul",       // /l/  — as in little
+};
+
 // ── Collect everything we need ───────────────────────────────────────────────
 
 const wordSet  = new Set();
@@ -92,7 +143,7 @@ console.log("\n── GPC sounds ───────────────�
 let j = 0;
 for (const { id, grapheme, hint } of gpcList) {
   process.stdout.write(`[${String(++j).padStart(3)}/${gpcList.length}] `);
-  const spoken = grapheme;
+  const spoken = PHONEME_SPOKEN_AS[id] ?? grapheme;
   await generate(id, join(GPCS_DIR, `${id}.mp3`), spoken);
 }
 
