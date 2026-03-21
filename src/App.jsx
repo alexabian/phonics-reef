@@ -464,7 +464,7 @@ function MissingGraphemeGame({ gpcId, audioEnabled, onComplete, onBack }) {
           <button
             className="btn-bounce"
             style={{ ...S.btn, ...S.btnSecondary, fontSize: 13, padding: "8px 16px", marginTop: 12 }}
-            onClick={() => speak(gpcId, "gpc")}
+            onClick={() => speak(GPCS[gpcId].words[0].word, "word")}
           >
             🔊 Hear it
           </button>
