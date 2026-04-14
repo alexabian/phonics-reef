@@ -16,7 +16,6 @@ function loadProgress() {
   try {
     const saved = localStorage.getItem("phonicsReefProgress");
     if (!saved) return INITIAL_PROGRESS;
-    // Merge saved data with INITIAL_PROGRESS so new levels are never undefined
     const parsed = JSON.parse(saved);
     return { ...INITIAL_PROGRESS, ...parsed };
   } catch {
@@ -44,7 +43,6 @@ function speak(text, type = "word") {
   }
   currentAudio = new Audio(src);
   currentAudio.play().catch(() => {
-    // Fallback to browser TTS if the file is missing
     if (window.speechSynthesis) {
       window.speechSynthesis.cancel();
       const utt = new SpeechSynthesisUtterance(text);
@@ -232,7 +230,7 @@ function HomeScreen({ onStart, audioEnabled, onToggleAudio }) {
       <div style={{ ...S.card, textAlign: "left", maxWidth: 480, margin: "0 auto" }}>
         <p style={{ ...S.p, margin: 0, fontSize: 14, color: "#e0f2fe" }}>
           🪸 9 ocean zones to explore<br />
-          🌟 Earn stars by spotting sounds<br />
+          🌟 Earn stars by mastering sounds<br />
           🔓 Unlock deeper waters as you improve<br />
           🎯 5 quick questions per session
         </p>
@@ -365,39 +363,394 @@ function GpcPicker({ levelId, progress, onSelectGpc, onBack }) {
   );
 }
 
-// ─── Game: Missing Grapheme ───────────────────────────────────────────────────
+// ─── Game helpers ─────────────────────────────────────────────────────────────
+
+// Letters to pad the typing bank with if the word's own letters + distractors aren't enough
+const FILLER_POOL = ["a", "e", "i", "o", "u", "s", "t", "n", "r", "l", "p", "c", "d", "m", "f", "g", "b", "h"];
+
+/**
+ * Split a word into tokens, treating the target grapheme as a single unit.
+ * e.g. tokenizeWord("ship", "sh") → ["sh", "i", "p"]
+ *      tokenizeWord("rain", "ai") → ["r", "ai", "n"]
+ * Split graphemes like "a_e" are handled by returning individual characters.
+ */
+function tokenizeWord(word, grapheme) {
+  if (grapheme.includes("_")) return word.split("");
+  const idx = word.indexOf(grapheme);
+  if (idx === -1) return word.split("");
+  return [
+    ...word.slice(0, idx).split(""),
+    grapheme,
+    ...word.slice(idx + grapheme.length).split(""),
+  ];
+}
+
+/**
+ * Build the shuffled letter bank for a typing question.
+ * Contains exactly the right letters to spell the word, plus up to 5 extras.
+ */
+function buildLetterBank(wordTokens, distractors) {
+  const inBank = new Set(wordTokens);
+  const extras = [];
+
+  // Prefer distractors from the data (single chars or short digraphs already known)
+  for (const d of distractors) {
+    if (!inBank.has(d) && extras.length < 3) {
+      extras.push(d);
+      inBank.add(d);
+    }
+  }
+
+  // Pad with common letters until we reach ~9 tiles
+  for (const l of FILLER_POOL) {
+    if (!inBank.has(l) && wordTokens.length + extras.length < 9) {
+      extras.push(l);
+      inBank.add(l);
+    }
+  }
+
+  return shuffle([...wordTokens, ...extras]);
+}
 
 const TOTAL_Q = 5;
 
-function MissingGraphemeGame({ gpcId, audioEnabled, onComplete, onBack }) {
+/**
+ * Build the question list for one game session.
+ * Mix: 3 "pick" (hear GPC → choose grapheme) + 2 "type" (hear word → spell it).
+ * Split graphemes (a_e etc.) can only do "pick".
+ */
+function buildQuestions(gpcId) {
   const gpc = GPCS[gpcId];
-  const [questions] = useState(() => shuffle(gpc.words).slice(0, TOTAL_Q));
-  const [qIndex, setQIndex] = useState(0);
+  const isSplit = gpc.grapheme.includes("_");
+  const words = shuffle(gpc.words).slice(0, TOTAL_Q);
+
+  // For split graphemes every question is "pick"; otherwise 3 pick + 2 type, shuffled
+  const types = isSplit
+    ? ["pick", "pick", "pick", "pick", "pick"]
+    : shuffle(["pick", "pick", "pick", "type", "type"]);
+
+  return words.map((w, i) => {
+    const type = types[i];
+    if (type === "pick") {
+      return {
+        type: "pick",
+        word: w.word,
+        // Answer + 2 of the 3 distractors → always exactly 3 options
+        options: shuffle([w.answer, w.distractors[0], w.distractors[1]]),
+        answer: w.answer,
+      };
+    } else {
+      const wordTokens = tokenizeWord(w.word, gpc.grapheme);
+      return {
+        type: "type",
+        word: w.word,
+        wordTokens,
+        letterBank: buildLetterBank(wordTokens, w.distractors),
+        answer: w.answer,
+      };
+    }
+  });
+}
+
+// ─── Game: Pick Question ──────────────────────────────────────────────────────
+
+/**
+ * Hear the GPC sound → tap the correct grapheme from 3 options.
+ */
+function PickQuestion({ q, gpcId, audioEnabled, onAnswer }) {
   const [selected, setSelected] = useState(null);
-  const [answered, setAnswered] = useState(false);
-  const [score, setScore] = useState(0);
-  const [streak, setStreak] = useState(0);
+  const answered = selected !== null;
+
+  // Auto-play the GPC sound when the question mounts
+  useEffect(() => {
+    if (!audioEnabled) return;
+    const t = setTimeout(() => speak(gpcId, "gpc"), 400);
+    return () => clearTimeout(t);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleTap = (opt) => {
+    if (answered) return;
+    setSelected(opt);
+    onAnswer(opt === q.answer);
+    if (audioEnabled) setTimeout(() => speak(q.word, "word"), 700);
+  };
+
+  return (
+    <div>
+      {/* Instruction card */}
+      <div style={{ ...S.card, textAlign: "center", marginBottom: 16 }}>
+        <div style={{ fontSize: 64, marginBottom: 8 }}>👂</div>
+        <div style={{ ...S.h2, marginBottom: 12 }}>Which letters make this sound?</div>
+        {audioEnabled && (
+          <button
+            className="btn-bounce"
+            style={{ ...S.btn, ...S.btnSecondary, fontSize: 15, padding: "10px 24px" }}
+            onClick={() => speak(gpcId, "gpc")}
+          >
+            🔊 Hear again
+          </button>
+        )}
+      </div>
+
+      {/* The 3 grapheme option buttons */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, marginBottom: 16 }}>
+        {q.options.map(opt => {
+          let extra = S.btnSecondary;
+          if (answered) {
+            if (opt === q.answer) extra = S.btnCorrect;
+            else if (opt === selected) extra = S.btnWrong;
+            else extra = { ...S.btnSecondary, opacity: 0.35 };
+          }
+          return (
+            <button
+              key={opt}
+              className="btn-bounce"
+              style={{
+                ...S.btn,
+                ...extra,
+                width: "100%",
+                fontSize: opt.length > 2 ? 20 : 30,
+                fontWeight: 900,
+                padding: "22px 8px",
+                letterSpacing: 1,
+              }}
+              onClick={() => handleTap(opt)}
+              disabled={answered}
+            >
+              {opt}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* After answering: let them hear the example word */}
+      {answered && audioEnabled && (
+        <div style={{ textAlign: "center" }}>
+          <button
+            className="btn-bounce"
+            style={{ ...S.btn, ...S.btnSecondary, fontSize: 14, padding: "8px 20px" }}
+            onClick={() => speak(q.word, "word")}
+          >
+            🔊 Hear &ldquo;{q.word}&rdquo;
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Game: Type Question ──────────────────────────────────────────────────────
+
+/**
+ * Hear the word → tap letter tiles to spell it.
+ * Digraphs appear as a single tile. Help reveals one letter at a time.
+ */
+function TypeQuestion({ q, audioEnabled, onAnswer }) {
+  // Bank entries carry a unique id so duplicates (e.g. two "l"s) can be tracked
+  const [typed, setTyped]       = useState([]);
+  const [bank, setBank]         = useState(() =>
+    q.letterBank.map((letter, i) => ({ id: i, letter }))
+  );
+  const [submitted, setSubmitted] = useState(false);
+  const [isCorrect, setIsCorrect] = useState(false);
+
+  // Auto-play the word when the question mounts
+  useEffect(() => {
+    if (!audioEnabled) return;
+    const t = setTimeout(() => speak(q.word, "word"), 400);
+    return () => clearTimeout(t);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const tapLetter = (item) => {
+    if (submitted || typed.length >= q.wordTokens.length) return;
+    setTyped(t => [...t, item]);
+    setBank(b => b.filter(x => x.id !== item.id));
+  };
+
+  const backspace = () => {
+    if (typed.length === 0 || submitted) return;
+    const last = typed[typed.length - 1];
+    setTyped(t => t.slice(0, -1));
+    setBank(b => [...b, last]);
+  };
+
+  // Hint: place the next correct letter automatically
+  const hint = () => {
+    if (submitted || typed.length >= q.wordTokens.length) return;
+    const nextToken = q.wordTokens[typed.length];
+    const itemInBank = bank.find(x => x.letter === nextToken);
+    if (itemInBank) tapLetter(itemInBank);
+  };
+
+  const submit = () => {
+    if (typed.length !== q.wordTokens.length || submitted) return;
+    const correct = typed.map(x => x.letter).join("") === q.word;
+    setIsCorrect(correct);
+    setSubmitted(true);
+    onAnswer(correct);
+    if (audioEnabled) setTimeout(() => speak(q.word, "word"), 500);
+  };
+
+  const isComplete = typed.length === q.wordTokens.length;
+  const slotColor = submitted ? (isCorrect ? "#10b981" : "#ef4444") : "#fff";
+
+  return (
+    <div>
+      {/* Instruction card */}
+      <div style={{ ...S.card, textAlign: "center", marginBottom: 16 }}>
+        <div style={{ fontSize: 64, marginBottom: 8 }}>🎧</div>
+        <div style={{ ...S.h2, marginBottom: 12 }}>Listen and spell the word!</div>
+        {audioEnabled && (
+          <button
+            className="btn-bounce"
+            style={{ ...S.btn, ...S.btnSecondary, fontSize: 15, padding: "10px 24px" }}
+            onClick={() => speak(q.word, "word")}
+          >
+            🔊 Hear again
+          </button>
+        )}
+      </div>
+
+      {/* Answer slots — one per token */}
+      <div style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "flex-end",
+        gap: 8,
+        marginBottom: 20,
+        flexWrap: "wrap",
+      }}>
+        {q.wordTokens.map((token, i) => {
+          const filled = typed[i];
+          const isActive = i === typed.length && !submitted;
+          return (
+            <div key={i} style={{
+              minWidth: token.length > 1 ? 56 : 48,
+              height: 64,
+              borderBottom: `3px solid ${submitted ? slotColor : isActive ? "#f97316" : "rgba(255,255,255,0.35)"}`,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: (filled?.letter?.length ?? token.length) > 1 ? 22 : 32,
+              fontWeight: 900,
+              color: slotColor,
+              padding: "0 4px",
+              transition: "color 0.2s, border-color 0.2s",
+            }}>
+              {filled ? filled.letter : ""}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Controls + bank (hidden after submit) */}
+      {!submitted && (
+        <>
+          <div style={{ display: "flex", justifyContent: "center", gap: 10, marginBottom: 16 }}>
+            <button
+              className="btn-bounce"
+              style={{
+                ...S.btn, ...S.btnSecondary,
+                fontSize: 14, padding: "10px 18px",
+                opacity: typed.length === 0 ? 0.35 : 1,
+              }}
+              onClick={backspace}
+              disabled={typed.length === 0}
+            >
+              ⌫ Undo
+            </button>
+            <button
+              className="btn-bounce"
+              style={{ ...S.btn, ...S.btnSecondary, fontSize: 14, padding: "10px 18px" }}
+              onClick={hint}
+            >
+              💡 Help
+            </button>
+          </div>
+
+          {/* Letter bank */}
+          <div style={{
+            display: "flex",
+            flexWrap: "wrap",
+            justifyContent: "center",
+            gap: 10,
+            marginBottom: 20,
+          }}>
+            {bank.map(item => (
+              <button
+                key={item.id}
+                className="btn-bounce"
+                style={{
+                  ...S.btn,
+                  ...S.btnSecondary,
+                  fontSize: item.letter.length > 1 ? 18 : 26,
+                  fontWeight: 900,
+                  padding: "16px 12px",
+                  minWidth: 56,
+                  letterSpacing: 0.5,
+                }}
+                onClick={() => tapLetter(item)}
+              >
+                {item.letter}
+              </button>
+            ))}
+          </div>
+
+          {/* Check button — appears when all slots filled */}
+          {isComplete && (
+            <div style={{ textAlign: "center" }}>
+              <button
+                className="btn-bounce"
+                style={{ ...S.btn, ...S.btnPrimary, fontSize: 18, padding: "16px 40px" }}
+                onClick={submit}
+              >
+                ✓ Check!
+              </button>
+            </div>
+          )}
+        </>
+      )}
+
+      {/* After submit: show the word with audio */}
+      {submitted && audioEnabled && (
+        <div style={{ textAlign: "center", marginTop: 8 }}>
+          <button
+            className="btn-bounce"
+            style={{ ...S.btn, ...S.btnSecondary, fontSize: 14, padding: "8px 20px" }}
+            onClick={() => speak(q.word, "word")}
+          >
+            🔊 Hear &ldquo;{q.word}&rdquo;
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Game: Session wrapper ────────────────────────────────────────────────────
+
+/**
+ * One game session. Remounted (via key) when "Play again" is tapped so
+ * questions are freshly generated and all state resets cleanly.
+ */
+function PhonicsGameSession({ gpcId, audioEnabled, onComplete, onBack, onPlayAgain }) {
+  const [questions] = useState(() => buildQuestions(gpcId));
+  const [qIndex, setQIndex]       = useState(0);
+  const [score, setScore]         = useState(0);
+  const [streak, setStreak]       = useState(0);
+  const [lastResult, setLastResult] = useState(null); // null | { correct, answer }
   const [showResult, setShowResult] = useState(false);
 
   const q = questions[qIndex];
-  const [shuffledOptions, setShuffledOptions] = useState(() => shuffle([q.answer, ...q.distractors]));
 
-  useEffect(() => {
-    setShuffledOptions(shuffle([q.answer, ...q.distractors]));
-  }, [qIndex]);
-
-  const handleAnswer = (choice) => {
-    if (answered) return;
-    setSelected(choice);
-    setAnswered(true);
-    const correct = choice === q.answer;
-    if (correct) {
+  const handleAnswer = (isCorrect) => {
+    if (isCorrect) {
       setScore(s => s + 1);
       setStreak(s => s + 1);
     } else {
       setStreak(0);
     }
-    if (audioEnabled) speak(q.word);
+    setLastResult({ correct: isCorrect, answer: q.answer, word: q.word });
   };
 
   const handleNext = () => {
@@ -405,8 +758,7 @@ function MissingGraphemeGame({ gpcId, audioEnabled, onComplete, onBack }) {
       setShowResult(true);
     } else {
       setQIndex(i => i + 1);
-      setSelected(null);
-      setAnswered(false);
+      setLastResult(null);
     }
   };
 
@@ -419,137 +771,104 @@ function MissingGraphemeGame({ gpcId, audioEnabled, onComplete, onBack }) {
         score={score}
         total={TOTAL_Q}
         stars={starsEarned}
-        onPlayAgain={() => {
-          setQIndex(0);
-          setSelected(null);
-          setAnswered(false);
-          setScore(0);
-          setStreak(0);
-          setShowResult(false);
-        }}
+        onPlayAgain={onPlayAgain}
         onComplete={onComplete}
         onBack={onBack}
       />
     );
   }
 
-  const wordParts = q.display.split(/_+/);
+  const feedbackColor = lastResult?.correct ? "#10b981" : "#f87171";
+  const feedbackMsg = lastResult
+    ? lastResult.correct
+      ? streak > 1 ? `🔥 ${streak} in a row!` : "✅ Brilliant!"
+      : `❌ The answer was "${lastResult.answer}"`
+    : null;
 
   return (
     <div>
       {/* Progress bar */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
-        <button className="btn-bounce" style={{ ...S.btn, ...S.btnSecondary, fontSize: 13, padding: "8px 16px" }} onClick={onBack}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+        <button
+          className="btn-bounce"
+          style={{ ...S.btn, ...S.btnSecondary, fontSize: 13, padding: "8px 16px" }}
+          onClick={onBack}
+        >
           ← Back
         </button>
         <div style={{ display: "flex", gap: 6 }}>
           {Array.from({ length: TOTAL_Q }).map((_, i) => (
             <div key={i} style={{
               width: 28, height: 8, borderRadius: 4,
-              background: i < qIndex ? "#10b981" : i === qIndex ? "#f97316" : "rgba(255,255,255,0.2)"
+              background: i < qIndex ? "#10b981" : i === qIndex ? "#f97316" : "rgba(255,255,255,0.2)",
             }} />
           ))}
         </div>
         <div style={{ fontSize: 14, fontWeight: 700, color: "#7dd3fc" }}>{score} ⭐</div>
       </div>
 
-      {/* GPC info card */}
-      <div style={{ ...S.card, textAlign: "center", marginBottom: 16 }}>
-        <div style={S.tag}>Find the sound</div>
-        <div style={{ fontSize: 40, fontWeight: 900, letterSpacing: 2, marginBottom: 4 }}>
-          {GPC_LABELS[gpcId] || gpc.grapheme}
-        </div>
-        <div style={{ fontSize: 15, color: "#bae6fd" }}>{gpc.sound} · {gpc.hint}</div>
-        {audioEnabled && (
-          <button
-            className="btn-bounce"
-            style={{ ...S.btn, ...S.btnSecondary, fontSize: 13, padding: "8px 16px", marginTop: 12 }}
-            onClick={() => speak(GPCS[gpcId].words[0].word, "word")}
-          >
-            🔊 Hear it
-          </button>
-        )}
+      {/* Mode badge + question counter */}
+      <div style={{ textAlign: "center", marginBottom: 14 }}>
+        <span style={S.tag}>
+          {q.type === "pick" ? "👂 Listen & Choose" : "✍️ Listen & Spell"}
+        </span>
+        <span style={{ fontSize: 13, color: "#7dd3fc", marginLeft: 10 }}>
+          {qIndex + 1} / {TOTAL_Q}
+        </span>
       </div>
 
-      {/* Word with gap */}
-      <div style={{ ...S.card, textAlign: "center", marginBottom: 16 }}>
-        <p style={{ ...S.p, fontSize: 13, margin: "0 0 12px" }}>
-          Question {qIndex + 1} of {TOTAL_Q}
-        </p>
-        <div style={{ fontSize: 42, fontWeight: 900, letterSpacing: 3, marginBottom: 8, lineHeight: 1.4 }}>
-          {wordParts.map((part, i) => (
-            <span key={i}>
-              {part}
-              {i < wordParts.length - 1 && (
-                <span style={{
-                  color: answered ? (selected === q.answer ? "#10b981" : "#ef4444") : "#f97316",
-                  borderBottom: `3px solid ${answered ? (selected === q.answer ? "#10b981" : "#ef4444") : "#f97316"}`,
-                  minWidth: 44,
-                  display: "inline-block",
-                  textAlign: "center",
-                  transition: "color 0.2s",
-                }}>
-                  {answered ? q.answer : "?"}
-                </span>
-              )}
-            </span>
-          ))}
-        </div>
-        {audioEnabled && answered && (
-          <button
-            className="btn-bounce"
-            style={{ ...S.btn, ...S.btnSecondary, fontSize: 13, padding: "8px 16px" }}
-            onClick={() => speak(q.word)}
-          >
-            🔊 {q.word}
-          </button>
-        )}
-      </div>
+      {/* Question — key forces full remount on each new question */}
+      {q.type === "pick" ? (
+        <PickQuestion
+          key={`pick-${qIndex}`}
+          q={q}
+          gpcId={gpcId}
+          audioEnabled={audioEnabled}
+          onAnswer={handleAnswer}
+        />
+      ) : (
+        <TypeQuestion
+          key={`type-${qIndex}`}
+          q={q}
+          audioEnabled={audioEnabled}
+          onAnswer={handleAnswer}
+        />
+      )}
 
-      {/* Options */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginBottom: 16 }}>
-        {shuffledOptions.map(opt => {
-          let extra = {};
-          if (answered) {
-            if (opt === q.answer) extra = S.btnCorrect;
-            else if (opt === selected) extra = S.btnWrong;
-          }
-          return (
-            <button
-              key={opt}
-              className="btn-bounce"
-              style={{
-                ...S.btn,
-                ...(answered ? extra : S.btnSecondary),
-                width: "100%",
-                fontSize: 22,
-                fontWeight: 900,
-                padding: "18px 8px",
-                letterSpacing: 1,
-              }}
-              onClick={() => handleAnswer(opt)}
-              disabled={answered}
-            >
-              {opt}
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Feedback */}
-      {answered && (
-        <div style={{ textAlign: "center" }}>
-          <div style={{ fontSize: 18, fontWeight: 800, marginBottom: 16, color: selected === q.answer ? "#10b981" : "#f87171" }}>
-            {selected === q.answer
-              ? streak > 1 ? `🔥 ${streak} in a row!` : "✅ Brilliant!"
-              : `❌ It was "${q.answer}" — in "${q.word}"`}
+      {/* Feedback + Next */}
+      {lastResult !== null && (
+        <div style={{ textAlign: "center", marginTop: 20 }}>
+          <div style={{ fontSize: 18, fontWeight: 800, marginBottom: 16, color: feedbackColor }}>
+            {feedbackMsg}
           </div>
-          <button className="btn-bounce" style={{ ...S.btn, ...S.btnPrimary }} onClick={handleNext}>
+          <button
+            className="btn-bounce"
+            style={{ ...S.btn, ...S.btnPrimary }}
+            onClick={handleNext}
+          >
             {qIndex + 1 >= TOTAL_Q ? "See results 🎉" : "Next →"}
           </button>
         </div>
       )}
     </div>
+  );
+}
+
+/**
+ * Outer wrapper that increments a key on "Play again" so the session remounts
+ * with fresh questions and clean state.
+ */
+function PhonicsGame({ gpcId, audioEnabled, onComplete, onBack }) {
+  const [sessionKey, setSessionKey] = useState(0);
+  return (
+    <PhonicsGameSession
+      key={sessionKey}
+      gpcId={gpcId}
+      audioEnabled={audioEnabled}
+      onComplete={onComplete}
+      onBack={onBack}
+      onPlayAgain={() => setSessionKey(k => k + 1)}
+    />
   );
 }
 
@@ -569,7 +888,7 @@ function ResultScreen({ gpcId, score, total, stars, onPlayAgain, onComplete, onB
     ? ["🐙", "Brilliant! You're a reef explorer!", "#34d399"]
     : ["🎉", "PERFECT! You're a phonics superstar!", "#a78bfa"];
 
-  useEffect(() => { onComplete(gpcId, stars); }, []);
+  useEffect(() => { onComplete(gpcId, stars); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div style={{ textAlign: "center", paddingTop: 20 }}>
@@ -674,7 +993,7 @@ export default function App() {
           />
         )}
         {screen === "game" && selectedGpc && (
-          <MissingGraphemeGame
+          <PhonicsGame
             key={selectedGpc}
             gpcId={selectedGpc}
             audioEnabled={audioEnabled}
