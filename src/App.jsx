@@ -435,6 +435,7 @@ function buildQuestions(gpcId) {
       return {
         type: "pick",
         word: w.word,
+        display: w.display,   // word with gap, e.g. "c_t" or "___ip"
         // Answer + 2 of the 3 distractors → always exactly 3 options
         options: shuffle([w.answer, w.distractors[0], w.distractors[1]]),
         answer: w.answer,
@@ -455,16 +456,18 @@ function buildQuestions(gpcId) {
 // ─── Game: Pick Question ──────────────────────────────────────────────────────
 
 /**
- * Hear the GPC sound → tap the correct grapheme from 3 options.
+ * Hear the word → tap the correct grapheme that fills the gap.
+ * Uses word audio (always reliable) instead of isolated GPC sounds
+ * (which are unintelligible, especially for vowels).
  */
-function PickQuestion({ q, gpcId, audioEnabled, onAnswer }) {
+function PickQuestion({ q, audioEnabled, onAnswer }) {
   const [selected, setSelected] = useState(null);
   const answered = selected !== null;
 
-  // Auto-play the GPC sound when the question mounts
+  // Auto-play the WORD on mount — word audio always works and gives clear context
   useEffect(() => {
     if (!audioEnabled) return;
-    const t = setTimeout(() => speak(gpcId, "gpc"), 400);
+    const t = setTimeout(() => speak(q.word, "word"), 400);
     return () => clearTimeout(t);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -472,20 +475,54 @@ function PickQuestion({ q, gpcId, audioEnabled, onAnswer }) {
     if (answered) return;
     setSelected(opt);
     onAnswer(opt === q.answer);
+    // Replay word after a short pause so Lidia can hear it again in context
     if (audioEnabled) setTimeout(() => speak(q.word, "word"), 700);
   };
 
+  // Render the word-with-gap (e.g. "c_t" → "c ? t")
+  const wordParts = q.display.split(/_+/);
+  const gapColor = answered
+    ? selected === q.answer ? "#10b981" : "#ef4444"
+    : "#f97316";
+
   return (
     <div>
-      {/* Instruction card */}
+      {/* Word card with gap */}
       <div style={{ ...S.card, textAlign: "center", marginBottom: 16 }}>
-        <div style={{ fontSize: 64, marginBottom: 8 }}>👂</div>
-        <div style={{ ...S.h2, marginBottom: 12 }}>Which letters make this sound?</div>
+        <div style={{ ...S.tag, marginBottom: 12 }}>Listen — which letters fill the gap?</div>
+
+        {/* Word with blank */}
+        <div style={{
+          fontSize: 46,
+          fontWeight: 900,
+          letterSpacing: 4,
+          marginBottom: 16,
+          lineHeight: 1.4,
+        }}>
+          {wordParts.map((part, i) => (
+            <span key={i}>
+              {part}
+              {i < wordParts.length - 1 && (
+                <span style={{
+                  color: gapColor,
+                  borderBottom: `3px solid ${gapColor}`,
+                  minWidth: 48,
+                  display: "inline-block",
+                  textAlign: "center",
+                  transition: "color 0.2s, border-color 0.2s",
+                }}>
+                  {answered ? q.answer : "?"}
+                </span>
+              )}
+            </span>
+          ))}
+        </div>
+
         {audioEnabled && (
           <button
             className="btn-bounce"
             style={{ ...S.btn, ...S.btnSecondary, fontSize: 15, padding: "10px 24px" }}
-            onClick={() => speak(gpcId, "gpc")}
+            onClick={() => speak(q.word, "word")}
           >
             🔊 Hear again
           </button>
@@ -522,19 +559,6 @@ function PickQuestion({ q, gpcId, audioEnabled, onAnswer }) {
           );
         })}
       </div>
-
-      {/* After answering: let them hear the example word */}
-      {answered && audioEnabled && (
-        <div style={{ textAlign: "center" }}>
-          <button
-            className="btn-bounce"
-            style={{ ...S.btn, ...S.btnSecondary, fontSize: 14, padding: "8px 20px" }}
-            onClick={() => speak(q.word, "word")}
-          >
-            🔊 Hear &ldquo;{q.word}&rdquo;
-          </button>
-        </div>
-      )}
     </div>
   );
 }
@@ -810,7 +834,7 @@ function PhonicsGameSession({ gpcId, audioEnabled, onComplete, onBack, onPlayAga
       {/* Mode badge + question counter */}
       <div style={{ textAlign: "center", marginBottom: 14 }}>
         <span style={S.tag}>
-          {q.type === "pick" ? "👂 Listen & Choose" : "✍️ Listen & Spell"}
+          {q.type === "pick" ? "🔍 Find the Sound" : "✍️ Listen & Spell"}
         </span>
         <span style={{ fontSize: 13, color: "#7dd3fc", marginLeft: 10 }}>
           {qIndex + 1} / {TOTAL_Q}
@@ -822,7 +846,6 @@ function PhonicsGameSession({ gpcId, audioEnabled, onComplete, onBack, onPlayAga
         <PickQuestion
           key={`pick-${qIndex}`}
           q={q}
-          gpcId={gpcId}
           audioEnabled={audioEnabled}
           onAnswer={handleAnswer}
         />
