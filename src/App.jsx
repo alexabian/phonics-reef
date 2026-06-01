@@ -26,7 +26,9 @@ function loadProgress() {
 function saveProgress(progress) {
   try {
     localStorage.setItem("phonicsReefProgress", JSON.stringify(progress));
-  } catch {}
+  } catch {
+    return;
+  }
 }
 
 // currentAudio is module-level so we can stop the previous clip before playing a new one
