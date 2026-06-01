@@ -1,7 +1,7 @@
 // generate-audio.mjs
 // Generates MP3 audio files for all words and GPC sounds in Phonics Reef
 // Uses ElevenLabs TTS — Alice (British educator, voice ID: Xb7hH8MSUJpSbSDYk0k2)
-// Run: ELEVENLABS_API_KEY=REDACTED_REMOVED_FROM_HISTORY node scripts/generate-audio.mjs
+// Run: ELEVENLABS_API_KEY=... node scripts/generate-audio.mjs
 
 import { writeFileSync, mkdirSync, existsSync } from "fs";
 import { join, dirname } from "path";
@@ -10,8 +10,14 @@ import { GPCS } from "../src/data.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-const API_KEY = process.env.ELEVENLABS_API_KEY || "REDACTED_REMOVED_FROM_HISTORY";
-const VOICE_ID = "Xb7hH8MSUJpSbSDYk0k2"; // Alice — British, Clear, Educational
+const API_KEY = process.env.ELEVENLABS_API_KEY;
+const VOICE_ID = process.env.ELEVENLABS_VOICE_ID || "Xb7hH8MSUJpSbSDYk0k2"; // Alice — British, Clear, Educational
+
+if (!API_KEY) {
+  throw new Error(
+    "Missing ELEVENLABS_API_KEY. Export it in your shell or use a local env loader before running scripts/generate-audio.mjs."
+  );
+}
 
 const WORDS_DIR = join(__dirname, "../public/audio/words");
 const GPCS_DIR  = join(__dirname, "../public/audio/gpcs");
