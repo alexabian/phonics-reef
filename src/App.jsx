@@ -988,6 +988,8 @@ export default function App() {
           style={{ ...S.btn, ...S.btnSecondary, fontSize: 18, padding: "8px 14px" }}
           onClick={() => setAudioEnabled(a => !a)}
           title={audioEnabled ? "Turn sound off" : "Turn sound on"}
+          aria-label={audioEnabled ? "Turn sound off" : "Turn sound on"}
+          aria-pressed={audioEnabled}
         >
           {audioEnabled ? "🔊" : "🔇"}
         </button>
