@@ -12,12 +12,48 @@ function shuffle(arr) {
   return a;
 }
 
+function sanitizeLevelProgress(levelProgress, fallbackLevelProgress) {
+  if (!levelProgress || typeof levelProgress !== "object" || Array.isArray(levelProgress)) {
+    return fallbackLevelProgress;
+  }
+
+  const stars = levelProgress.stars && typeof levelProgress.stars === "object" && !Array.isArray(levelProgress.stars)
+    ? Object.fromEntries(
+        Object.entries(levelProgress.stars).filter(([, value]) => Number.isFinite(value) && value >= 0),
+      )
+    : {};
+
+  const completed = Array.isArray(levelProgress.completed)
+    ? levelProgress.completed.filter(item => typeof item === "string")
+    : [];
+
+  return {
+    ...fallbackLevelProgress,
+    unlocked: typeof levelProgress.unlocked === "boolean" ? levelProgress.unlocked : fallbackLevelProgress.unlocked,
+    stars,
+    completed,
+  };
+}
+
+function sanitizeProgress(progress) {
+  if (!progress || typeof progress !== "object" || Array.isArray(progress)) {
+    return INITIAL_PROGRESS;
+  }
+
+  return Object.fromEntries(
+    Object.entries(INITIAL_PROGRESS).map(([levelId, fallbackLevelProgress]) => [
+      levelId,
+      sanitizeLevelProgress(progress[levelId], fallbackLevelProgress),
+    ]),
+  );
+}
+
 function loadProgress() {
   try {
     const saved = localStorage.getItem("phonicsReefProgress");
     if (!saved) return INITIAL_PROGRESS;
     const parsed = JSON.parse(saved);
-    return { ...INITIAL_PROGRESS, ...parsed };
+    return sanitizeProgress(parsed);
   } catch {
     return INITIAL_PROGRESS;
   }
